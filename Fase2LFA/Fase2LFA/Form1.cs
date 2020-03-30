@@ -19,6 +19,7 @@ namespace Fase2LFA
         //Método de Lectura
         void Lectura()
         {
+            Lineas.Clear();
             string Ruta = "";
             using (OpenFileDialog Selección = new OpenFileDialog())
             {
@@ -48,6 +49,20 @@ namespace Fase2LFA
                 }
             }
         }
+        //Verificar que no existan definiciones fuera de las secciones de SETS  o TOKENS
+        bool ExpresionSuelta()
+        {
+            bool Bandera;
+            if (((Lineas[0].ToString()) == "SETS") || ((Lineas[0].ToString()) == "TOKENS"))
+            {
+                Bandera = false;
+            }
+            else
+            {
+                Bandera = true;
+            }
+            return Bandera;
+        }
         public Form1()
         {
             InitializeComponent();
@@ -57,6 +72,17 @@ namespace Fase2LFA
         {
             lbProceso.Visible = true;
             Lectura();
+            bool ExpSuelta = ExpresionSuelta();
+            if (!ExpSuelta)
+            {
+
+            }
+            else
+            {
+                MessageBox.Show("Se encontró una definición fuera de las secciones de \"SETS\" o \"TOKENS\"");
+                lbProceso.Visible = false;
+                lbIncorrecto.Visible = true;
+            }
         }
     }
 }
