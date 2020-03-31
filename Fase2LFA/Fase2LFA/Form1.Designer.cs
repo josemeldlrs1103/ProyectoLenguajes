@@ -123,6 +123,7 @@
             this.btCrear.TabIndex = 7;
             this.btCrear.Text = "Crear árboles";
             this.btCrear.UseVisualStyleBackColor = true;
+            this.btCrear.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btCrear_MouseClick);
             // 
             // btCargar
             // 
