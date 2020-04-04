@@ -34,8 +34,6 @@
             this.lbCorrecto = new System.Windows.Forms.Label();
             this.lbIncorrecto = new System.Windows.Forms.Label();
             this.lbProceso = new System.Windows.Forms.Label();
-            this.lbArboles = new System.Windows.Forms.Label();
-            this.btCrear = new System.Windows.Forms.Button();
             this.btCargar = new System.Windows.Forms.Button();
             this.tbDirección = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
@@ -63,7 +61,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(50, 168);
+            this.label3.Location = new System.Drawing.Point(62, 113);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(205, 17);
             this.label3.TabIndex = 2;
@@ -74,7 +72,7 @@
             this.lbCorrecto.AutoSize = true;
             this.lbCorrecto.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbCorrecto.ForeColor = System.Drawing.Color.Lime;
-            this.lbCorrecto.Location = new System.Drawing.Point(319, 245);
+            this.lbCorrecto.Location = new System.Drawing.Point(331, 190);
             this.lbCorrecto.Name = "lbCorrecto";
             this.lbCorrecto.Size = new System.Drawing.Size(261, 32);
             this.lbCorrecto.TabIndex = 3;
@@ -86,7 +84,7 @@
             this.lbIncorrecto.AutoSize = true;
             this.lbIncorrecto.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbIncorrecto.ForeColor = System.Drawing.Color.Red;
-            this.lbIncorrecto.Location = new System.Drawing.Point(304, 245);
+            this.lbIncorrecto.Location = new System.Drawing.Point(316, 190);
             this.lbIncorrecto.Name = "lbIncorrecto";
             this.lbIncorrecto.Size = new System.Drawing.Size(278, 32);
             this.lbIncorrecto.TabIndex = 4;
@@ -98,36 +96,16 @@
             this.lbProceso.AutoSize = true;
             this.lbProceso.Font = new System.Drawing.Font("Microsoft Sans Serif", 16.2F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lbProceso.ForeColor = System.Drawing.Color.Silver;
-            this.lbProceso.Location = new System.Drawing.Point(314, 245);
+            this.lbProceso.Location = new System.Drawing.Point(326, 190);
             this.lbProceso.Name = "lbProceso";
             this.lbProceso.Size = new System.Drawing.Size(262, 32);
             this.lbProceso.TabIndex = 5;
             this.lbProceso.Text = "Análisis en proceso";
             this.lbProceso.Visible = false;
             // 
-            // lbArboles
-            // 
-            this.lbArboles.AutoSize = true;
-            this.lbArboles.Location = new System.Drawing.Point(204, 126);
-            this.lbArboles.Name = "lbArboles";
-            this.lbArboles.Size = new System.Drawing.Size(529, 17);
-            this.lbArboles.TabIndex = 6;
-            this.lbArboles.Text = "Los árboles de expresión han sido creados, puede cargar un archivo de gramática";
-            this.lbArboles.Visible = false;
-            // 
-            // btCrear
-            // 
-            this.btCrear.Location = new System.Drawing.Point(53, 118);
-            this.btCrear.Name = "btCrear";
-            this.btCrear.Size = new System.Drawing.Size(145, 33);
-            this.btCrear.TabIndex = 7;
-            this.btCrear.Text = "Crear árboles";
-            this.btCrear.UseVisualStyleBackColor = true;
-            this.btCrear.MouseClick += new System.Windows.Forms.MouseEventHandler(this.btCrear_MouseClick);
-            // 
             // btCargar
             // 
-            this.btCargar.Location = new System.Drawing.Point(726, 183);
+            this.btCargar.Location = new System.Drawing.Point(738, 128);
             this.btCargar.Name = "btCargar";
             this.btCargar.Size = new System.Drawing.Size(145, 33);
             this.btCargar.TabIndex = 8;
@@ -138,7 +116,7 @@
             // tbDirección
             // 
             this.tbDirección.Enabled = false;
-            this.tbDirección.Location = new System.Drawing.Point(53, 188);
+            this.tbDirección.Location = new System.Drawing.Point(65, 133);
             this.tbDirección.Name = "tbDirección";
             this.tbDirección.Size = new System.Drawing.Size(645, 22);
             this.tbDirección.TabIndex = 9;
@@ -147,11 +125,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(915, 450);
+            this.ClientSize = new System.Drawing.Size(915, 267);
             this.Controls.Add(this.tbDirección);
             this.Controls.Add(this.btCargar);
-            this.Controls.Add(this.btCrear);
-            this.Controls.Add(this.lbArboles);
             this.Controls.Add(this.lbProceso);
             this.Controls.Add(this.lbIncorrecto);
             this.Controls.Add(this.lbCorrecto);
@@ -173,8 +149,6 @@
         private System.Windows.Forms.Label lbCorrecto;
         private System.Windows.Forms.Label lbIncorrecto;
         private System.Windows.Forms.Label lbProceso;
-        private System.Windows.Forms.Label lbArboles;
-        private System.Windows.Forms.Button btCrear;
         private System.Windows.Forms.Button btCargar;
         private System.Windows.Forms.TextBox tbDirección;
     }

@@ -14,13 +14,6 @@ namespace Fase2LFA
 {
     public partial class Form1 : Form
     {
-        //Creación de Árboles de Expresión
-        void DefinirÁrboles()
-        {
-            Árbol Auxiliar = new Árbol();
-            Nodo ArbolSets = Auxiliar.CrearArbol("(0.1*|1.0*).#");
-            int pausa = 0;
-        }
         //Arreglo que contiene todas las líneas del archivo
         ArrayList Lineas = new ArrayList();
         //Arreglo usado para verficar el orden de las secciones
@@ -49,11 +42,23 @@ namespace Fase2LFA
                     using (StreamReader Lector = new StreamReader(LeerArchivo))
                     {
                         string LineaLeida = "";
+                        string LineaLimpia = "";
                         while ((LineaLeida = Lector.ReadLine()) != null)
                         {
+                            LineaLimpia = string.Empty;
                             if (LineaLeida != "")
                             {
-                                string LineaLimpia = LineaLeida.Trim(' ','\t');
+                                char[] Caracteres = LineaLeida.ToCharArray();
+                                for (int i = 0; i < Caracteres.Length; i++)
+                                {
+                                    if (Caracteres[i] != ' ' && Caracteres[i] != '\t'&&Caracteres[i]!='\n')
+                                    {
+                                        LineaLimpia += (Caracteres[i]).ToString();
+                                    }
+                                }
+                            }
+                            if (LineaLimpia != string.Empty)
+                            {
                                 Lineas.Add(LineaLimpia);
                             }
                         }
@@ -66,137 +71,64 @@ namespace Fase2LFA
                 }
             }
         }
-        //Verificar que no existan definiciones fuera de las secciones de SETS  o TOKENS
-        bool ExpresionSuelta()
-        {
-            bool Bandera;
-            if (((Lineas[0].ToString()) == "SETS") || ((Lineas[0].ToString()) == "TOKENS"))
-            {
-                Bandera = false;
-            }
-            else
-            {
-                Bandera = true;
-            }
-            return Bandera;
-        }
-        //Comprobar Orden de las secciones del Archivo
-        bool OrdenSecciones()
-        {
-            bool Bandera;
-            foreach (string Linea in Lineas)
-            {
-                if ((Linea == "SETS") || (Linea == "TOKENS") || (Linea == "ACTIONS") || (Linea.Contains("ERROR")))
-                {
-                    Secciones.Add(Linea);
-                }
-            }
-            //OrdenEsperado si se encuentra la sección "SETS"
-            if (((Secciones[0].ToString())=="SETS")&& ((Secciones[1].ToString()) == "TOKENS")&&((Secciones[2].ToString()) == "ACTIONS")&& ((Secciones[3].ToString()).Contains("ERROR")))
-            {
-                Bandera = true;
-            }
-            else if (((Secciones[0].ToString()) == "TOKENS") && ((Secciones[1].ToString()) == "ACTIONS") && ((Secciones[2].ToString()).Contains("ERROR")))
-            {
-                Bandera = true;
-            }
-            else
-            {
-                Bandera = false;
-            }
-            return Bandera;
-        }
-        //Calcular índices
-        void Índices()
-        {
-            bool BanderaTokens=false, BanderaActions = false, BanderaError = false;
-            foreach (string Linea in Lineas)
-            {
-                if(Linea == "SETS")
-                {
-                    IndTokens++;
-                    IndActions++;
-                    IndError++;
-                }
-                else if (Linea == "TOKENS")
-                {
-                    BanderaTokens = true;
-                    IndActions++;
-                    IndError++;
-                }
-                else if (Linea == "ACTIONS")
-                {
-                    BanderaActions = true;
-                    IndError++;
-                }
-                else if (Linea.Contains("ERROR"))
-                {
-                    BanderaError = true;
-                }
-                else
-                {
-                    if(!BanderaTokens)
-                    {
-                        IndTokens++;
-                    }
-                    if (!BanderaActions)
-                    {
-                        IndActions++;
-                    }
-                    if (!BanderaError)
-                    {
-                        IndError++;
-                    }
-                }
-            }
-        }
-
-
-        //Separar el contenido de las secciones del archivo
-        void SepararSecciones()
-        {
-            if(IndSets!=IndTokens)
-            {
-                for(int i= IndSets+1; i<IndTokens; i++)
-                {
-                    Sets.Add(Lineas[i].ToString());
-                }
-                for (int i = IndTokens + 1; i < IndActions; i++)
-                {
-                    Tokens.Add(Lineas[i].ToString());
-                }
-                for (int i = IndActions + 1; i < IndError; i++)
-                {
-                    Actions.Add(Lineas[i].ToString());
-                }
-                for (int i = IndError; i < Lineas.Count; i++)
-                {
-                    Errors.Add(Lineas[i].ToString());
-                }
-            }
-        }
         public Form1()
         {
             InitializeComponent();
-        }
-        private void btCrear_MouseClick(object sender, MouseEventArgs e)
-        {
-            DefinirÁrboles();
-            int pasu = 0;
         }
         private void btCargar_MouseClick(object sender, MouseEventArgs e)
         {
             lbProceso.Visible = true;
             Lectura();
-            bool ExpSuelta = ExpresionSuelta();
+            bool ExpSuelta = Fase1.ExpresionSuelta(ref Lineas);
             if (!ExpSuelta)
             {
-                bool SeccionesOrdenadas = OrdenSecciones();
+                bool SeccionesOrdenadas = Fase1.OrdenSecciones(ref Lineas, ref Secciones);
                 if(SeccionesOrdenadas)
                 {
-                    Índices();
-                    SepararSecciones();
-                    int pausa = 0;
+                    Fase1.Índices(ref Lineas, ref IndSets, ref IndTokens, ref IndActions, ref IndError);
+                    Fase1.SepararSecciones(ref Lineas, ref Sets, ref Tokens, ref Actions, ref Errors, ref IndSets, ref IndTokens, ref IndActions, ref IndError);
+                    bool SetsAprovados = Fase1.AnalizarSets(ref Sets, ref IndSets);
+                    if(SetsAprovados)
+                    {
+                        bool TokensAprovados = Fase1.AnalizarTokens(ref Tokens, ref IndTokens);
+                        if(TokensAprovados)
+                        {
+                            bool ActionsAprovado = Fase1.AnalizarActions(ref Actions, ref IndActions);
+                            if (ActionsAprovado)
+                            {
+                                bool ErrorsAprovado = Fase1.AnalizarErrors(ref Errors, ref IndError);
+                                if(ErrorsAprovado)
+                                {
+                                    lbProceso.Visible = false;
+                                    lbCorrecto.Visible = true;
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Se encontró un error en la sección de errors, en la línea " + IndError);
+                                    lbProceso.Visible = false;
+                                    lbIncorrecto.Visible = true;
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("Se encontró un error en la sección de actions, en la línea " + IndActions);
+                                lbProceso.Visible = false;
+                                lbIncorrecto.Visible = true;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Se encontró un error en la sección de tokens, en la línea " + IndTokens);
+                            lbProceso.Visible = false;
+                            lbIncorrecto.Visible = true;
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Se encontró un error en la sección de sets, en la línea " + IndSets);
+                        lbProceso.Visible = false;
+                        lbIncorrecto.Visible = true;
+                    }
                 }
                 else
                 {
