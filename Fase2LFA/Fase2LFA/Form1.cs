@@ -101,6 +101,9 @@ namespace Fase2LFA
                                 {
                                     lbProceso.Visible = false;
                                     lbCorrecto.Visible = true;
+                                    Form2.ObtenerListas(Sets, Tokens);
+                                    Form2 GeneradorS = new Form2();
+                                    GeneradorS.Show();
                                 }
                                 else
                                 {
