@@ -16,8 +16,22 @@ namespace Fase2LFA
         //Arreglos a comprobar
         public static ArrayList SetsF2 = new ArrayList();
         public static ArrayList TokensF2 = new ArrayList();
+        //Arreglo que contiene las cadenas que se consideran como símbolos terminales
         public static ArrayList SimbolosT = new ArrayList();
+        //Cola que se usa para generar la expresión regular de la que se generará el árbol de expresión
         public static Queue<string> ColaSímbolos = new Queue<string>();
+        //Cola que contiene todos los nodos del árbol por separado, se usa para mostrar los valores first, last y nullable de cada nodo
+        public static Queue<Nodo> NodosÁrbol = new Queue<Nodo>();
+        //Cola que contiene únicamente los nodos hoja, se usa para mostrar los follow de los símbolos terminales
+        public static Queue<Nodo> NodosHoja = new Queue<Nodo>();
+        //Lista que contiene las cadenas de los símbolos terminales usados
+        public static Queue<string> SimbolosUsados = new Queue<string>();
+        //Cola que contiene los estados descubiertos que han sido analizados
+        public static Queue<List<int>> EstadosVisitados = new Queue<List<int>>();
+        //Cola que contiene los estados descubiertos que no han sido analizados
+        public static Queue<List<int>> EstadosNuevos = new Queue<List<int>>();
+        //Diccionario que contiene los estados y los follows de cada símbolo
+        public static Dictionary<List<int>, Dictionary<string, List<int>>> EstadosAnalizados = new Dictionary<List<int>, Dictionary<string, List<int>>>();
         public static void ObtenerListas(ArrayList lista1, ArrayList lista2)
         {
             SetsF2 = lista1;
@@ -41,7 +55,13 @@ namespace Fase2LFA
                 {
                     Fase2.ParsearTokens(ref TokensF2, ref SimbolosT);
                     Fase2.CargarColaExpresion(ref TokensF2, ref SimbolosT, ref ColaSímbolos);
-                    int pausa2 = 0;
+                    Árbol ArExpresión = new Árbol();
+                    Nodo Raiz = ArExpresión.CrearArbol(ref ColaSímbolos, ref SimbolosT);
+                    ArExpresión.DefinirNumeroSimbolo(ref Raiz, ref NodosHoja);
+                    ArExpresión.NodosFyL(ref Raiz, ref NodosÁrbol);
+                    ArExpresión.NodosFollow(ref Raiz, ref NodosHoja);
+                    Fase2.DescartarSimbolosRepetidos(ref SimbolosUsados, ref NodosHoja);
+                    Fase2.BuscarTransiciones(ref Raiz.First, ref NodosHoja, ref SimbolosUsados, ref EstadosNuevos,ref EstadosVisitados, ref EstadosAnalizados);
                 }
                 else
                 {

@@ -161,7 +161,7 @@ namespace Fase2LFA
                         if ((Convert.ToInt32(IndicesApostrofes[0]) + 2 == Convert.ToInt32(IndicesApostrofes[1]))|| (Convert.ToInt32(IndicesApostrofes[0]) + 2 == Convert.ToInt32(IndicesApostrofes[2])&& Convert.ToInt32(IndicesApostrofes[0])+1==Convert.ToInt32(IndicesApostrofes[1])))
                         {
                             int Indice = Convert.ToInt32(IndicesApostrofes[0]) + 1;
-                            if (Letras[Indice] != '(' && Letras[Indice] != '+' && Letras[Indice] != '?' && Letras[Indice] != '*' && Letras[Indice] != ')' && Letras[Indice] != '|' && Letras[Indice] != '.' && Letras[Indice] != '\'')
+                            if (Letras[Indice] != '(' && Letras[Indice] != '+' && Letras[Indice] != '?' && Letras[Indice] != '*' && Letras[Indice] != ')' && Letras[Indice] != '|' && Letras[Indice] != '.' && Letras[Indice] != '\'' && Letras[Indice] != '#')
                             {
                                 if (!SimbolosT.Contains(Letras[Indice].ToString()))
                                 {
@@ -193,6 +193,10 @@ namespace Fase2LFA
                         }
                     }
                 }
+            }
+            if (!SimbolosT.Contains("#"))
+            {
+                SimbolosT.Add("#");
             }
             return true;
         }
@@ -327,6 +331,75 @@ namespace Fase2LFA
             ColaEx.Enqueue(")");
             ColaEx.Enqueue(".");
             ColaEx.Enqueue("#");
+        }
+        //Buscar las cadenas de los simbolos terminales usados
+        public static void DescartarSimbolosRepetidos(ref Queue<string> SimbolosUsados, ref Queue<Nodo> NodosHoja)
+        {
+            foreach(Nodo Hoja in NodosHoja)
+            {
+                if(!SimbolosUsados.Contains(Hoja.Caracter)&& Hoja.Caracter!="#")
+                {
+                    SimbolosUsados.Enqueue(Hoja.Caracter);
+                }
+            }
+        }
+        //Calcular transiciones
+        public static void BuscarTransiciones(ref List<int> EstadoInicial , ref Queue<Nodo> NodosHoja, ref Queue<string> SimbolosUsados, ref Queue<List<int>> EstadosNuevos, ref Queue<List<int>> EstadosVisitados, ref Dictionary<List<int>, Dictionary<string,List<int>>> EstadosAnalizados)
+        {
+            EstadosNuevos.Enqueue(EstadoInicial);
+            while (EstadosNuevos.Count > 0)
+            {
+                List<int> NumerosNodo = EstadosNuevos.Dequeue();
+                EstadosAnalizados.Add(NumerosNodo, CrearDiccionarioSimbolos(ref SimbolosUsados));
+                EstadosVisitados.Enqueue(NumerosNodo);
+                foreach (int NumNodo in NumerosNodo)
+                {
+                    foreach (Nodo Hoja in NodosHoja)
+                    {
+                        if (Hoja.First.First() == NumNodo)
+                        {
+                            string CaracterHoja = Hoja.Caracter;
+                            if (CaracterHoja != "#")
+                            {
+                                EstadosAnalizados[NumerosNodo][CaracterHoja] = Hoja.Follow;
+                                bool EstadoNuevo = false;
+                                bool EstadoVisitado = false;
+                                foreach (List<int> Numeros in EstadosNuevos)
+                                {
+                                    if (Numeros.SequenceEqual(Hoja.Follow))
+                                    {
+                                        EstadoNuevo = true;
+                                    }
+                                }
+                                foreach (List<int> Numeros1 in EstadosVisitados)
+                                {
+                                    if (Numeros1.SequenceEqual(Hoja.Follow))
+                                    {
+                                        EstadoVisitado = true;
+                                    }
+                                }
+                                if (EstadoNuevo == false && EstadoVisitado == false)
+                                {
+                                    EstadosNuevos.Enqueue(Hoja.Follow);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                
+            }
+        }
+        //Definición de diccionario usado para los símbolos de cada estado
+        public static Dictionary<string, List<int>> CrearDiccionarioSimbolos(ref Queue<string> SimbolosUsados)
+        {
+            Dictionary<string, List<int>> SimbolosEstado = new Dictionary<string, List<int>>();
+            List<int> NodosSimbolo = new List<int>();
+            foreach (string Simbolo in SimbolosUsados)
+            {
+                SimbolosEstado.Add(Simbolo, NodosSimbolo);
+            }
+            return SimbolosEstado;
         }
     }
 }
