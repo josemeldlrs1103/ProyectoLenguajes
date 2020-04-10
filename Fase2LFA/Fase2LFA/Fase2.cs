@@ -333,18 +333,18 @@ namespace Fase2LFA
             ColaEx.Enqueue("#");
         }
         //Buscar las cadenas de los simbolos terminales usados
-        public static void DescartarSimbolosRepetidos(ref Queue<string> SimbolosUsados, ref Queue<Nodo> NodosHoja)
+        public static void DescartarSimbolosRepetidos(ref List<string> SimbolosUsados, ref Queue<Nodo> NodosHoja)
         {
             foreach(Nodo Hoja in NodosHoja)
             {
                 if(!SimbolosUsados.Contains(Hoja.Caracter)&& Hoja.Caracter!="#")
                 {
-                    SimbolosUsados.Enqueue(Hoja.Caracter);
+                    SimbolosUsados.Add(Hoja.Caracter);
                 }
             }
         }
         //Calcular transiciones
-        public static void BuscarTransiciones(ref List<int> EstadoInicial , ref Queue<Nodo> NodosHoja, ref Queue<string> SimbolosUsados, ref Queue<List<int>> EstadosNuevos, ref Queue<List<int>> EstadosVisitados, ref Dictionary<List<int>, Dictionary<string,List<int>>> EstadosAnalizados)
+        public static void BuscarTransiciones(ref List<int> EstadoInicial , ref Queue<Nodo> NodosHoja, ref List<string> SimbolosUsados, ref Queue<List<int>> EstadosNuevos, ref Queue<List<int>> EstadosVisitados, ref Dictionary<List<int>, Dictionary<string,List<int>>> EstadosAnalizados)
         {
             EstadosNuevos.Enqueue(EstadoInicial);
             while (EstadosNuevos.Count > 0)
@@ -391,7 +391,7 @@ namespace Fase2LFA
             }
         }
         //Definición de diccionario usado para los símbolos de cada estado
-        public static Dictionary<string, List<int>> CrearDiccionarioSimbolos(ref Queue<string> SimbolosUsados)
+        public static Dictionary<string, List<int>> CrearDiccionarioSimbolos(ref List<string> SimbolosUsados)
         {
             Dictionary<string, List<int>> SimbolosEstado = new Dictionary<string, List<int>>();
             List<int> NodosSimbolo = new List<int>();

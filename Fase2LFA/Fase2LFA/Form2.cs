@@ -25,7 +25,7 @@ namespace Fase2LFA
         //Cola que contiene únicamente los nodos hoja, se usa para mostrar los follow de los símbolos terminales
         public static Queue<Nodo> NodosHoja = new Queue<Nodo>();
         //Lista que contiene las cadenas de los símbolos terminales usados
-        public static Queue<string> SimbolosUsados = new Queue<string>();
+        public static List<string> SimbolosUsados = new List<string>();
         //Cola que contiene los estados descubiertos que han sido analizados
         public static Queue<List<int>> EstadosVisitados = new Queue<List<int>>();
         //Cola que contiene los estados descubiertos que no han sido analizados
@@ -62,6 +62,149 @@ namespace Fase2LFA
                     ArExpresión.NodosFollow(ref Raiz, ref NodosHoja);
                     Fase2.DescartarSimbolosRepetidos(ref SimbolosUsados, ref NodosHoja);
                     Fase2.BuscarTransiciones(ref Raiz.First, ref NodosHoja, ref SimbolosUsados, ref EstadosNuevos,ref EstadosVisitados, ref EstadosAnalizados);
+                    foreach(Nodo Elemento in NodosÁrbol )
+                    {
+                        string[] ValoresNodo = new string[4];
+                        string First = "";
+                        if(Elemento.First.Count==1)
+                        {
+                            First += Elemento.First.First().ToString();
+                        }
+                        else
+                        {
+                            foreach(int NumNodo in Elemento.First)
+                            {
+                                if(First=="")
+                                {
+                                    First += NumNodo.ToString();
+                                }
+                                else
+                                {
+                                    First += "," + NumNodo.ToString();
+                                }
+                            }
+                        }
+                        string Last = "";
+                        if(Elemento.Last.Count==1)
+                        {
+                            Last += Elemento.Last.First().ToString();
+                        }
+                        else
+                        {
+                            foreach(int NumNodo in Elemento.Last)
+                            {
+                                if(Last== "")
+                                {
+                                    Last += NumNodo;
+                                }
+                                else
+                                {
+                                    Last += "," + NumNodo;
+                                }
+                            }
+                        }
+                        ValoresNodo[0] = Elemento.Caracter;
+                        ValoresNodo[1] = First;
+                        ValoresNodo[2] = Last;
+                        if(Elemento.Nullable == false)
+                        {
+                            ValoresNodo[3] = "False";
+                        }
+                        else
+                        {
+                            ValoresNodo[3] = "True";
+                        }
+                        dgNodoFLN.Rows.Add(ValoresNodo);
+                    }
+                    foreach (Nodo Hoja in NodosHoja)
+                    {
+                        string[] ValoresNodo = new string[2];
+                        string NumeroNodo = Hoja.First.First().ToString();
+                        string FollowsHoja = "";
+                        if(Hoja.Follow.Count==1)
+                        {
+                            FollowsHoja += Hoja.Follow.First().ToString();
+                        }
+                        else if(Hoja.Follow.Count==0)
+                        {
+                            FollowsHoja = "------------------";
+                        }
+                        else
+                        {
+                            foreach (int NumeroHoja in Hoja.Follow)
+                            {
+                                if (FollowsHoja == "")
+                                {
+                                    FollowsHoja += NumeroHoja;
+                                }
+                                else
+                                {
+                                    
+                                    FollowsHoja += "," + NumeroHoja;
+                                }
+                            }
+                        }
+                        ValoresNodo[0] = NumeroNodo;
+                        ValoresNodo[1] = FollowsHoja;
+                        dgNodoFollow.Rows.Add(ValoresNodo);
+                    }
+                    foreach(string Simbolo in SimbolosUsados)
+                    {
+                        dgEstados.Columns.Add(Simbolo, Simbolo);
+                    }
+                    foreach(List<int> Estado in EstadosVisitados)
+                    {
+                        string[] ValoresEstado = new string[SimbolosUsados.Count + 1];
+                        string NumerosEstado = "";
+                        if(Estado.Count==1)
+                        {
+                            NumerosEstado += Estado.First().ToString();
+                        }
+                        else
+                        {
+                            foreach(int Numero in Estado)
+                            {
+                                if(NumerosEstado=="")
+                                {
+                                    NumerosEstado += Numero;
+                                }
+                                else
+                                {
+                                    NumerosEstado += "," + Numero;
+                                }
+                            }
+                        }
+                        ValoresEstado[0] = NumerosEstado;
+                        for (int i = 1; i < SimbolosUsados.Count + 1; i++)
+                        {
+                            List<int> NumerosFollow = EstadosAnalizados[Estado][SimbolosUsados[i - 1]];
+                            string NumerosString = "";
+                            if (NumerosFollow.Count == 1)
+                            {
+                                NumerosString += NumerosFollow.First();
+                            }
+                            else if (NumerosFollow.Count==0)
+                            {
+                                NumerosString = "--------------";
+                            }
+                            else
+                            {
+                                foreach (int NumeroF in NumerosFollow)
+                                {
+                                    if (NumerosString == "")
+                                    {
+                                        NumerosString += NumeroF;
+                                    }
+                                    else
+                                    {
+                                        NumerosString += "," + NumeroF;
+                                    }
+                                }
+                            }
+                            ValoresEstado[i] = NumerosString;
+                        }
+                        dgEstados.Rows.Add(ValoresEstado);
+                    }
                 }
                 else
                 {
