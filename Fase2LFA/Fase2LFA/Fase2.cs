@@ -203,16 +203,16 @@ namespace Fase2LFA
         //Adaptar el valor de cada token para la expresión regular
         public static void ParsearTokens(ref ArrayList Tokens, ref ArrayList SimbolosT)
         {
-            for(int i =0; i<Tokens.Count; i++)
+            for (int i = 0; i < Tokens.Count; i++)
             {
                 string LineaAuxiliar = Tokens[i].ToString();
                 char[] Letras = LineaAuxiliar.ToCharArray();
                 string LineaAdaptada = "";
-                while(LineaAuxiliar.Length>0)
+                while (LineaAuxiliar.Length > 0)
                 {
-                    if(Letras[0]!='+'&&Letras[0] != '*'&& Letras[0] != '?'&&Letras[0] != '|'&& Letras[0] != ')')
+                    if (Letras[0] != '|' && Letras[0] != ')' && Letras[0] != '+' && Letras[0] != '*' && Letras[0] != '?')
                     {
-                        if(LineaAdaptada != string.Empty)
+                        if (LineaAdaptada != string.Empty)
                         {
                             LineaAdaptada += ".";
                         }
@@ -220,13 +220,20 @@ namespace Fase2LFA
                     else
                     {
                         LineaAdaptada += Letras[0];
-                        LineaAuxiliar = LineaAuxiliar.Remove(0,1);
+                        LineaAuxiliar = LineaAuxiliar.Remove(0, 1);
                         Letras = LineaAuxiliar.ToCharArray();
                     }
                     if (Letras.Length > 0)
                     {
                         if (Letras[0] == '(')
                         {
+                            if (!LineaAdaptada.EndsWith("(")&& !LineaAdaptada.EndsWith("|")&&!LineaAdaptada.EndsWith("."))
+                            {
+                                if (LineaAdaptada != string.Empty)
+                                {
+                                    LineaAdaptada += ".";
+                                }
+                            }
                             LineaAdaptada += Letras[0];
                             LineaAuxiliar = LineaAuxiliar.Remove(0, 1);
                             Letras = LineaAuxiliar.ToCharArray();
@@ -235,14 +242,28 @@ namespace Fase2LFA
                         {
                             if (Letras[2] == '\'')
                             {
-                                if (Letras[1] != '+' && Letras[1] != '*' && Letras[1] != '?' && Letras[1] != '|' && Letras[1] != ')' && Letras[1] != '(' && Letras[1] != '.')
+                                if (Letras[1] != '+' && Letras[1] != '*' && Letras[1] != '?' && Letras[1] != '|' && Letras[1] != ')' && Letras[1] != '(' && Letras[1] != '.' && Letras[1] != '#')
                                 {
+                                    if (!LineaAdaptada.EndsWith("(") && !LineaAdaptada.EndsWith("|") && !LineaAdaptada.EndsWith("."))
+                                    {
+                                        if (LineaAdaptada != string.Empty)
+                                        {
+                                            LineaAdaptada += ".";
+                                        }
+                                    }
                                     LineaAdaptada += Letras[1];
                                     LineaAuxiliar = LineaAuxiliar.Remove(0, 3);
                                     Letras = LineaAuxiliar.ToCharArray();
                                 }
                                 else
                                 {
+                                    if (!LineaAdaptada.EndsWith("(") && !LineaAdaptada.EndsWith("|") && !LineaAdaptada.EndsWith("."))
+                                    {
+                                        if (LineaAdaptada != string.Empty)
+                                        {
+                                            LineaAdaptada += ".";
+                                        }
+                                    }
                                     LineaAdaptada += "\\" + Letras[1] + "\\";
                                     LineaAuxiliar = LineaAuxiliar.Remove(0, 3);
                                     Letras = LineaAuxiliar.ToCharArray();
@@ -255,6 +276,13 @@ namespace Fase2LFA
                             {
                                 if (LineaAuxiliar.StartsWith(Palabra))
                                 {
+                                    if (!LineaAdaptada.EndsWith("(") && !LineaAdaptada.EndsWith("|") && !LineaAdaptada.EndsWith("."))
+                                    {
+                                        if (LineaAdaptada != string.Empty)
+                                        {
+                                            LineaAdaptada += ".";
+                                        }
+                                    }
                                     LineaAdaptada += Palabra;
                                     LineaAuxiliar = LineaAuxiliar.Remove(0, Palabra.Length);
                                     Letras = LineaAuxiliar.ToCharArray();

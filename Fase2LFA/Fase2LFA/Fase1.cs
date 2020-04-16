@@ -138,7 +138,8 @@ namespace Fase2LFA
         //Analizar Sets
         public static bool AnalizarSets(ref ArrayList Sets, ref int IndSets)
         {
-            if(Sets.Count>0)
+            IndSets++;
+            if (Sets.Count>0)
             {
                 foreach(string Linea in Sets)
                 {
@@ -329,7 +330,8 @@ namespace Fase2LFA
         //Analizar Tokens
         public static bool AnalizarTokens(ref ArrayList Tokens, ref int IndTokens)
         {
-            foreach(string Linea in Tokens)
+            IndTokens++;
+            foreach (string Linea in Tokens)
             {
                 IndTokens++;
                 char[] Letras = Linea.ToCharArray();
@@ -363,6 +365,13 @@ namespace Fase2LFA
                             {
                                 int posición = IndiceIgual;
                                 int ContadorAp = 0;
+                                for(int i=0; i<Letras.Length-2; i++)
+                                {
+                                    if(Letras[i]=='\''&& Letras[i+1] == '\''&& Letras[i+2] == '\'')
+                                    {
+                                        ContadorAp--;
+                                    }
+                                }
                                 while (posición < Letras.Length)
                                 {
                                     if (Letras[posición] == '\'')
@@ -371,6 +380,7 @@ namespace Fase2LFA
                                     }
                                     posición++;
                                 }
+ 
                                 if (ContadorAp % 2 != 0)
                                 {
                                     return false;
@@ -453,6 +463,7 @@ namespace Fase2LFA
         //Analizar Actions
         public static bool AnalizarActions(ref ArrayList Actions, ref int IndActions)
         {
+            IndActions++;
             bool LlaveAbierta = false;
             int ContadorFunciones = 0;
             int ContadorLlaveAbre = 0;
@@ -560,7 +571,8 @@ namespace Fase2LFA
         //Analizar Errors
         public static bool AnalizarErrors(ref ArrayList Errors, ref int IndError)
         {
-            foreach(string Linea in Errors)
+            IndError++;
+            foreach (string Linea in Errors)
             {
                 IndError++;
                 char[] Letras = Linea.ToCharArray();

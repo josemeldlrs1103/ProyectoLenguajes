@@ -77,6 +77,8 @@ namespace Fase2LFA
         }
         private void btCargar_MouseClick(object sender, MouseEventArgs e)
         {
+            lbCorrecto.Visible = false;
+            lbIncorrecto.Visible = false;
             lbProceso.Visible = true;
             Lectura();
             bool ExpSuelta = Fase1.ExpresionSuelta(ref Lineas);
