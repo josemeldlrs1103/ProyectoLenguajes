@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,12 @@ namespace Fase2LFA
 {
     public partial class Form2 : Form
     {
+        //Ventana para ubicación de carpeta Analizador_Lenguajes
+        FolderBrowserDialog DirecciónPrograma = new FolderBrowserDialog();
+        //Listas que contienen la información que se va a exportar a la nueva solución
+        public static ArrayList SetsExportar = new ArrayList();
+        public static ArrayList TokensExportar = new ArrayList();
+        public static ArrayList ActionsExportar = new ArrayList();
         //Arreglos a comprobar
         public static ArrayList SetsF2 = new ArrayList();
         public static ArrayList TokensF2 = new ArrayList();
@@ -30,12 +37,20 @@ namespace Fase2LFA
         public static Queue<List<int>> EstadosVisitados = new Queue<List<int>>();
         //Cola que contiene los estados descubiertos que no han sido analizados
         public static Queue<List<int>> EstadosNuevos = new Queue<List<int>>();
-        //Diccionario que contiene los estados y los follows de cada símbolo
+        //Diccionarios que contienen los estados y los follows de cada símbolo
         public static Dictionary<List<int>, Dictionary<string, List<int>>> EstadosAnalizados = new Dictionary<List<int>, Dictionary<string, List<int>>>();
-        public static void ObtenerListas(ArrayList lista1, ArrayList lista2)
+        public static Dictionary<int, Dictionary<string,string>> EstadosSimplificados = new Dictionary<int, Dictionary<string,string>>();
+        //Diccionario de los nombres de cada estado
+        public static Dictionary<int, List<int>> NombresEstado = new Dictionary<int, List<int>>();
+        //Lista que contiene el nombre de los estados que se consideran válidos
+        public static List<int> EstadosFinales = new List<int>();
+        //Cola que contiene las líneas de código a escribir sobre el ejecutable generado
+        public static Queue<string> LineasEscribir = new Queue<string>();
+        public static void ObtenerListas(ArrayList lista1, ArrayList lista2, ArrayList lista3)
         {
             SetsF2 = lista1;
-            TokensF2 = lista2;
+            TokensExportar = lista2;
+            ActionsExportar = lista3;
         }
        
         public Form2()
@@ -46,7 +61,7 @@ namespace Fase2LFA
         private void btFase2_MouseClick(object sender, MouseEventArgs e)
         {
             Fase2.ObtenerSímbolosSets(ref SetsF2, ref SimbolosT);
-            Fase2.LimpiarTokens(ref TokensF2);
+            Fase2.LimpiarTokens(ref TokensExportar, ref TokensF2);
             bool SetsUsados = Fase2.BuscarSets(ref TokensF2, ref SimbolosT);
             if(SetsUsados)
             {
@@ -205,6 +220,7 @@ namespace Fase2LFA
                         }
                         dgEstados.Rows.Add(ValoresEstado);
                     }
+                    btExportación.Enabled = true;
                 }
                 else
                 {
@@ -217,6 +233,34 @@ namespace Fase2LFA
                 MessageBox.Show("Se encontró que se está intentando usar un set que no ha sido definido");
                 this.Close();
             }
+        }
+
+        private void btExportación_Click(object sender, EventArgs e)
+        {
+            DirecciónPrograma.ShowDialog();
+            string Dirección = DirecciónPrograma.SelectedPath;
+            string Nombre = Microsoft.VisualBasic.Interaction.InputBox("Ingrese un nombre para guardar", "Generar Programa", "");
+            Nombre = Nombre.Trim(' ');
+            while (Nombre == string.Empty)
+            {
+                Nombre = Microsoft.VisualBasic.Interaction.InputBox("Ingrese un nombre para guardar", "Generar Programa", "");
+                Nombre = Nombre.Trim(' ');
+            }
+            Dirección += "\\"+ Nombre;
+            if(!Directory.Exists(Dirección))
+            {
+                Directory.CreateDirectory(Dirección);
+                string DirecciónActual = Directory.GetCurrentDirectory();
+                DirecciónActual = DirecciónActual.TrimEnd("\\Fase2LFA\\Fase2LFA\\bin\\Debug".ToCharArray());
+                DirecciónActual += "es\\Analizador_Lenguaje";
+                Fase2.CopiarContenido(DirecciónActual, Dirección);
+            }
+            Fase2.SimplificarAutomata(ref EstadosVisitados, ref NombresEstado, ref EstadosAnalizados, ref SimbolosUsados, ref EstadosSimplificados);
+            Fase2.BuscarEstadosAceptacion(NodosHoja,NombresEstado, ref EstadosFinales);
+            Fase2.ExportarArreglos(SetsF2, TokensExportar, ActionsExportar,EstadosFinales, SimbolosT , Dirección);
+            Fase2.GenerarCodigo(ref LineasEscribir, SimbolosUsados,EstadosSimplificados);
+            Fase2.EscribirMain(LineasEscribir, Dirección);
+            MessageBox.Show("Cierre las ventanas de este ejecutable y dirijase a la ubicación en la que generó el programa");
         }
     }
 }

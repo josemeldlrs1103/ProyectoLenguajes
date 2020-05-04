@@ -41,6 +41,7 @@
             this.Follow = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dgEstados = new System.Windows.Forms.DataGridView();
             this.Estado = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btExportación = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgNodoFLN)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgNodoFollow)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgEstados)).BeginInit();
@@ -183,11 +184,23 @@
             this.Estado.ReadOnly = true;
             this.Estado.Width = 125;
             // 
+            // btExportación
+            // 
+            this.btExportación.Enabled = false;
+            this.btExportación.Location = new System.Drawing.Point(1105, 43);
+            this.btExportación.Name = "btExportación";
+            this.btExportación.Size = new System.Drawing.Size(141, 29);
+            this.btExportación.TabIndex = 8;
+            this.btExportación.Text = "Generar Programa";
+            this.btExportación.UseVisualStyleBackColor = true;
+            this.btExportación.Click += new System.EventHandler(this.btExportación_Click);
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1461, 502);
+            this.Controls.Add(this.btExportación);
             this.Controls.Add(this.dgEstados);
             this.Controls.Add(this.dgNodoFollow);
             this.Controls.Add(this.dgNodoFLN);
@@ -219,5 +232,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Follow;
         private System.Windows.Forms.DataGridView dgEstados;
         private System.Windows.Forms.DataGridViewTextBoxColumn Estado;
+        private System.Windows.Forms.Button btExportación;
     }
 }
