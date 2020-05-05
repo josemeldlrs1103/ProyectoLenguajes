@@ -431,32 +431,7 @@ namespace Analizador_Lenguaje
             {
                 SímbolosOrdenados.Add(Simbolos[i], Sets[Simbolos[i]]);
             }
-            Sets = null;
             Simbolos = null;
-        }
-        //Lista de número y token
-        public static void ObtenerLista(ref Dictionary<string, string> Tokens, ref Dictionary<string, string> Actions, ref SortedList<int, string> NúmerosToken)
-        {
-            bool AgregarActions = false;
-            foreach (KeyValuePair<string, string> Token in Tokens)
-            {
-                int Número = Convert.ToInt32(Token.Key);
-                NúmerosToken.Add(Número, Token.Value);
-                if (Token.Value.Contains("{RESERVADAS()}"))
-                {
-                    AgregarActions = true;
-                }
-            }
-            if (AgregarActions)
-            {
-                foreach (KeyValuePair<string, string> Action in Actions)
-                {
-                    int Número = Convert.ToInt32(Action.Key);
-                    NúmerosToken.Add(Número, Action.Value);
-                }
-                Tokens = null;
-                Actions = null;
-            }
         }
         //Menú de inicio
         public static void Menú(ref int Opción, ref string Cadena)
@@ -500,6 +475,61 @@ namespace Analizador_Lenguaje
                 Linea = ArchivoEntrada.ReadLine();
             }
             return Linea;
+        }
+        //Buscar el número de token al que pertenece cada palabra
+        public static void BuscarNúmeroToken(string[] EntradasCadena, Dictionary<string, string> Sets, Dictionary<string, string> Tokens, Dictionary<string, string> Actions, Dictionary<string, string> SimbolosPermitidos)
+        {
+            foreach(string Cadena in EntradasCadena)
+            {
+                bool Reservada = false;
+                foreach(KeyValuePair<string, string> Action in Actions)
+                {
+                    if(Cadena.Equals(Action.Value, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        Console.WriteLine(Cadena + " = " + Action.Key);
+                        Reservada = true;
+                        break;
+                    }
+                }
+                if(!Reservada)
+                {
+                    bool SimboloSimple = false;
+                    char[] Caracteres = Cadena.ToCharArray();
+                    string ConjuntoPertenece = string.Empty;
+                    if(SimbolosPermitidos.ContainsKey(Caracteres[0].ToString()))
+                    {
+                        ConjuntoPertenece = SimbolosPermitidos[Caracteres[0].ToString()];
+                        foreach(KeyValuePair<string, string> Token in Tokens)
+                        {
+                            if(Token.Value.StartsWith(ConjuntoPertenece))
+                            {
+                                Console.WriteLine(Cadena + " = " + Token.Key);
+                                SimboloSimple = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(!SimboloSimple)
+                    {
+                        foreach (KeyValuePair<string, string> Set in Sets)
+                        {
+                            if (Set.Value.Contains(Caracteres[0].ToString()))
+                            {
+                                ConjuntoPertenece = Set.Key;
+                                break;
+                            }
+                        }
+                        foreach (KeyValuePair<string, string> Token in Tokens)
+                        {
+                            if (Token.Value.StartsWith(ConjuntoPertenece))
+                            {
+                                Console.WriteLine(Cadena + " = " + Token.Key);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

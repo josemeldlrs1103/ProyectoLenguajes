@@ -588,7 +588,6 @@ namespace Fase2LFA
             LineasEscribir.Enqueue("        public static List<int> EstadosAceptación = new List<int>();");
             LineasEscribir.Enqueue("        public static List<string> NombreSimbolos = new List<string>();");
             LineasEscribir.Enqueue("        public static Dictionary<string, string> SimbolosPermitidos= new Dictionary<string, string>();");
-            LineasEscribir.Enqueue("        public static SortedList<int, string> NúmerosToken = new SortedList<int, string>();");
             LineasEscribir.Enqueue("        static void Main(string[] args)");
             LineasEscribir.Enqueue("        {");
             LineasEscribir.Enqueue("            LecturaEntradas.ImportarArchivos(ref Sets, ref Tokens, ref Actions, ref EstadosAceptación, ref NombreSimbolos);");
@@ -666,6 +665,7 @@ namespace Fase2LFA
             LineasEscribir.Enqueue("                Console.WriteLine(\"La cadena ha sido aceptada\");");
             LineasEscribir.Enqueue("                Console.ForegroundColor = ConsoleColor.DarkGreen;");
             LineasEscribir.Enqueue("                Console.WriteLine(\"Las palabra ingresadas pertenecen a los siguientes tokens:\");");
+            LineasEscribir.Enqueue("                LecturaEntradas.BuscarNúmeroToken(EntradasCadena, Sets, Tokens,  Actions, SimbolosPermitidos);");
             LineasEscribir.Enqueue("                Console.ReadKey();");
             LineasEscribir.Enqueue("            }");
             LineasEscribir.Enqueue("        }");
