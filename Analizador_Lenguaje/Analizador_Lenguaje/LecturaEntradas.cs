@@ -9,7 +9,7 @@ namespace Analizador_Lenguaje
     public static class LecturaEntradas
     {
         //Leer la información de los archivos 
-        public static void ImportarArchivos(ref Dictionary<string, string> Sets, ref Dictionary<string, string> Tokens, ref Dictionary<string, string> Actions, ref List<int> EstadosAceptación, ref List<string> NombreSimbolos)
+        public static void ImportarArchivos(ref Dictionary<string, string> Sets, ref Dictionary<string, string> Tokens, ref Dictionary<string, Dictionary<string,string>> Actions, ref List<int> EstadosAceptación, ref List<string> NombreSimbolos, ref List<string> NombresSets)
         {
             string Ubicación = Directory.GetCurrentDirectory();
             Ubicación += "\\Archivos";
@@ -18,7 +18,7 @@ namespace Analizador_Lenguaje
                 string Linea = string.Empty;
                 while ((Linea = LeerSets.ReadLine()) != null)
                 {
-                    ClasificarSets(Linea, ref Sets);
+                    ClasificarSets(Linea, ref Sets, ref NombresSets);
                 }
             }
             using (StreamReader LeerTokens = new StreamReader(Ubicación + "\\Tokens.txt"))
@@ -32,9 +32,26 @@ namespace Analizador_Lenguaje
             using (StreamReader LeerAcciones = new StreamReader(Ubicación + "\\Actions.txt"))
             {
                 string Linea = string.Empty;
+                List<string> NúmerosAction = new List<string>();
+                string Action = string.Empty;
                 while ((Linea = LeerAcciones.ReadLine()) != null)
                 {
-                    ClasificarAcciones(Linea, ref Actions);
+                    if (Linea.Contains("()"))
+                    {
+                        Action = Linea;
+                    }
+                    else if (Linea == "{")
+                    {
+                        NúmerosAction.Clear();
+                    }
+                    else if (Linea == "}")
+                    {
+                        ClasificarAcciones(NúmerosAction, ref Actions, Action);
+                    }
+                    else
+                    {
+                        NúmerosAction.Add(Linea);
+                    }
                 }
             }
             using (StreamReader LeerEstadosAceptación = new StreamReader(Ubicación + "\\EstadosAceptación.txt"))
@@ -52,13 +69,17 @@ namespace Analizador_Lenguaje
                 {
                     if (Linea != "#")
                     {
+                        if(Linea.StartsWith("\\") && Linea.EndsWith("\\"))
+                        {
+                            Linea = Linea.Trim('\\');
+                        }
                         NombreSimbolos.Add(Linea);
                     }
                 }
             }
         }
         //Clasificar la información de los sets
-        public static void ClasificarSets(string Linea, ref Dictionary<string, string> Sets)
+        public static void ClasificarSets(string Linea, ref Dictionary<string, string> Sets, ref List<string> NombresSets)
         {
             int PosiciónIgual = 0;
             string[] Secciones = new string[2];
@@ -308,6 +329,7 @@ namespace Analizador_Lenguaje
                 }
             }
             Sets.Add(Secciones[0], CaracteresSet);
+            NombresSets.Add(Secciones[0]);
         }
         //Clasificar la información del token leído
         public static void ClasificarEntrada(string Linea, ref Dictionary<string, string> Diccionario)
@@ -385,33 +407,16 @@ namespace Analizador_Lenguaje
             Diccionario.Add(Secciones[0], Valor);
         }
         //Clasificar el contenido de las acciones
-        public static void ClasificarAcciones(string Linea, ref Dictionary<string, string> Actions)
+        public static void ClasificarAcciones(List<string> NúmerosAction, ref Dictionary<string, Dictionary<string, string>> Actions, string Action)
         {
-            int Contador = 0;
-            char[] Letra = Linea.ToCharArray();
-            foreach (char Caracter in Letra)
+            Dictionary<string, string> ValorAcción = new Dictionary<string, string>();
+            foreach (string ElementoAccion in NúmerosAction)
             {
-                if (Caracter != '=')
-                {
-                    Contador++;
-                }
-                else
-                {
-                    break;
-                }
+                string[] ValoresSeparados = ElementoAccion.Split('=');
+                string Palabra = ValoresSeparados[1].Trim('\'');
+                ValorAcción.Add(ValoresSeparados[0], Palabra);
             }
-            string[] Secciones = new string[2];
-            for (int i = 0; i < Contador; i++)
-            {
-                Secciones[0] += Letra[i];
-            }
-            for (int i = Contador + 1; i < Letra.Length; i++)
-            {
-                Secciones[1] += Letra[i];
-            }
-            string Valor = Secciones[1];
-            Valor = Valor.Trim('\'');
-            Actions.Add(Secciones[0], Valor);
+            Actions.Add(Action, ValorAcción);
         }
         //Definir los símbolos que se pueden usar
         public static void DefinirSímbolos(ref List<string> Simbolos, ref Dictionary<string, string> Sets, ref Dictionary<string, string> SímbolosOrdenados)
@@ -476,55 +481,99 @@ namespace Analizador_Lenguaje
             }
             return Linea;
         }
-        //Buscar el número de token al que pertenece cada palabra
-        public static void BuscarNúmeroToken(string[] EntradasCadena, Dictionary<string, string> Sets, Dictionary<string, string> Tokens, Dictionary<string, string> Actions, Dictionary<string, string> SimbolosPermitidos)
+        //Separar tokens que utilizan sets
+        public static void SepararTokensVariables(List<string> NombresSets, ref Dictionary<string, string> Tokens, ref Dictionary<string, string> TokensVariados)
         {
-            foreach(string Cadena in EntradasCadena)
+            Dictionary<string, string> Temp = new Dictionary<string, string>();
+            foreach (KeyValuePair<string, string> Token in Tokens)
             {
-                bool Reservada = false;
-                foreach(KeyValuePair<string, string> Action in Actions)
+                bool ContieneSets = false;
+                foreach (string NombreSet in NombresSets)
                 {
-                    if(Cadena.Equals(Action.Value, StringComparison.InvariantCultureIgnoreCase))
+                    if (Token.Value.Contains(NombreSet))
                     {
-                        Console.WriteLine(Cadena + " = " + Action.Key);
-                        Reservada = true;
+                        TokensVariados.Add(Token.Key, Token.Value);
+                        ContieneSets = true;
                         break;
                     }
                 }
-                if(!Reservada)
+                if (!ContieneSets)
                 {
-                    bool SimboloSimple = false;
-                    char[] Caracteres = Cadena.ToCharArray();
-                    string ConjuntoPertenece = string.Empty;
-                    if(SimbolosPermitidos.ContainsKey(Caracteres[0].ToString()))
+                    Temp.Add(Token.Key, Token.Value);
+                }
+            }
+            Tokens.Clear();
+            Tokens = Temp;
+        }
+        //Buscar el número de token al que pertenece cada palabra
+        public static void BuscarNúmeroToken(string[] EntradasCadena, Dictionary<string, string> Sets, Dictionary<string, string> Tokens, Dictionary<string, Dictionary<string, string>> Actions, Dictionary<string, string> SimbolosPermitidos, Dictionary<string, string> TokensVariados)
+        {
+            foreach (string Cadena in EntradasCadena)
+            {
+                bool Reservada = false;
+                bool TokenVariable = false;
+                foreach (KeyValuePair<string, Dictionary<string, string>> Action in Actions)
+                {
+                    foreach (KeyValuePair<string, string> Valor in Action.Value)
                     {
-                        ConjuntoPertenece = SimbolosPermitidos[Caracteres[0].ToString()];
-                        foreach(KeyValuePair<string, string> Token in Tokens)
+                        if (Cadena.Equals(Valor.Value, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            if(Token.Value.StartsWith(ConjuntoPertenece))
-                            {
-                                Console.WriteLine(Cadena + " = " + Token.Key);
-                                SimboloSimple = true;
-                                break;
-                            }
+                            Console.WriteLine(Cadena + " = " + Valor.Key);
+                            Reservada = true;
+                            break;
                         }
                     }
-                    if(!SimboloSimple)
+                    if (Reservada)
                     {
-                        foreach (KeyValuePair<string, string> Set in Sets)
+                        break;
+                    }
+                }
+                if (!Reservada)
+                {
+                    foreach(KeyValuePair<string, string> Token in Tokens)
+                    {
+                        if (Cadena.Equals(Token.Value, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            if (Set.Value.Contains(Caracteres[0].ToString()))
+                            Console.WriteLine(Cadena + " = " + Token.Key);
+                            TokenVariable = true;
+                            break;
+                        }
+                    }
+                    if (!TokenVariable)
+                    {
+                        bool SimboloSimple = false;
+                        char[] Caracteres = Cadena.ToCharArray();
+                        string ConjuntoPertenece = string.Empty;
+                        if (SimbolosPermitidos.ContainsKey(Caracteres[0].ToString()))
+                        {
+                            ConjuntoPertenece = SimbolosPermitidos[Caracteres[0].ToString()];
+                            foreach (KeyValuePair<string, string> Token in TokensVariados)
                             {
-                                ConjuntoPertenece = Set.Key;
-                                break;
+                                if (Token.Value.StartsWith(ConjuntoPertenece))
+                                {
+                                    Console.WriteLine(Cadena + " = " + Token.Key);
+                                    SimboloSimple = true;
+                                    break;
+                                }
                             }
                         }
-                        foreach (KeyValuePair<string, string> Token in Tokens)
+                        if (!SimboloSimple)
                         {
-                            if (Token.Value.StartsWith(ConjuntoPertenece))
+                            foreach (KeyValuePair<string, string> Set in Sets)
                             {
-                                Console.WriteLine(Cadena + " = " + Token.Key);
-                                break;
+                                if (Set.Value.Contains(Caracteres[0].ToString()))
+                                {
+                                    ConjuntoPertenece = Set.Key;
+                                    break;
+                                }
+                            }
+                            foreach (KeyValuePair<string, string> Token in TokensVariados)
+                            {
+                                if (Token.Value.StartsWith(ConjuntoPertenece))
+                                {
+                                    Console.WriteLine(Cadena + " = " + Token.Key);
+                                    break;
+                                }
                             }
                         }
                     }

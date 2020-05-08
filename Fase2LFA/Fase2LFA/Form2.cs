@@ -253,13 +253,13 @@ namespace Fase2LFA
                 string DirecciónActual = Directory.GetCurrentDirectory();
                 DirecciónActual = DirecciónActual.TrimEnd("\\Fase2LFA\\Fase2LFA\\bin\\Debug".ToCharArray());
                 DirecciónActual += "es\\Analizador_Lenguaje";
-                Fase2.CopiarContenido(DirecciónActual, Dirección);
+                Fase3.CopiarContenido(DirecciónActual, Dirección);
             }
-            Fase2.SimplificarAutomata(ref EstadosVisitados, ref NombresEstado, ref EstadosAnalizados, ref SimbolosUsados, ref EstadosSimplificados);
-            Fase2.BuscarEstadosAceptacion(NodosHoja,NombresEstado, ref EstadosFinales);
-            Fase2.ExportarArreglos(SetsF2, TokensExportar, ActionsExportar,EstadosFinales, SimbolosT , Dirección);
-            Fase2.GenerarCodigo(ref LineasEscribir, SimbolosUsados,EstadosSimplificados);
-            Fase2.EscribirMain(LineasEscribir, Dirección);
+            Fase3.SimplificarAutomata(ref EstadosVisitados, ref NombresEstado, ref EstadosAnalizados, ref SimbolosUsados, ref EstadosSimplificados);
+            Fase3.BuscarEstadosAceptacion(NodosHoja,NombresEstado, ref EstadosFinales);
+            Fase3.ExportarArreglos(SetsF2, TokensExportar, ActionsExportar,EstadosFinales, SimbolosT , Dirección);
+            Fase3.GenerarCodigo(ref LineasEscribir, SimbolosUsados,EstadosSimplificados);
+            Fase3.EscribirMain(LineasEscribir, Dirección);
             MessageBox.Show("Cierre las ventanas de este ejecutable y dirijase a la ubicación en la que generó el programa");
         }
     }
